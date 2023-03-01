@@ -19,7 +19,15 @@ exports.storage = multer.diskStorage({
     },
 });
 
-
+exports.docStorage=multer.diskStorage({
+    destination:function(req,file,cb){
+        cb(null,"./docs")
+    },
+    filename:function(req,file,cb){
+        const fn=v4()+file.originalname
+        cb(null,fn)
+    }
+})
 
 // Get All Users
 
@@ -212,4 +220,35 @@ exports.validateSchema=async(req,res,next)=>{
     return res.json({'error':message})
   }
 
+}
+
+
+
+
+exports.uploadDocById = async (req, res, next) => {
+
+
+    try {
+
+        fs.readFile(fsPath, "utf-8", (err, data) => {
+
+            const { body: payload } = req
+            const results = JSON.parse(data)
+
+
+            const index = results.indexOf(results.find(item => item.id === req.params.id))
+
+            if (!results[index]) throw new Error("user not found")
+
+            payload.docs = req.file.filename
+
+            results[index] = { ...results[index], ...payload }
+
+            fs.writeFile(fsPath, JSON.stringify(results), (err) => console.log(err))
+
+            return res.json("message : user updated with doc successfully")
+        })
+    } catch (error) {
+        console.log(error)
+    }
 }
