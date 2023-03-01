@@ -55,7 +55,7 @@ exports.createUser = (req, res) => {
             payload.id = Math.floor(Math.random() * 10000) + "_" + payload.name.split(" ")[0]
             
             console.log(req.file)
-            
+
             results.push(payload)
 
             fs.writeFile(fsPath, JSON.stringify(results), (err) => console.log(err))
